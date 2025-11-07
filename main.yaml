@@ -1,27 +1,32 @@
 substitutions:
-  device_name: ascs-raumsensor
-  fw_version: "1.0.0"
+  firmware_version: "1.0.0"
 
 esphome:
-  name: ${device_name}
-  friendly_name: ASCS Raumsensor
+  name: ascs-raumsensor
+  friendly_name: ASCS Rasumsensor
 
 esp32:
   board: esp32dev
   framework:
     type: esp-idf
 
+# Enable logging
 logger:
 
+# Enable Home Assistant API without encryption for broader accessibility
 api:
 
 mdns:
 
-wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
+improv_serial:
 
+esp32_improv:
+  authorizer: none
+esp32_ble_tracker:
+
+# OTA (Over-The-Air) Updates ohne Passwort für einfache Konnektivität
 ota:
+  - platform: esphome
 
 i2c:
   sda: GPIO21
@@ -237,11 +242,6 @@ text_sensor:
       else {
         return {"unknown"};
       }
-    name: "${device_name} Firmware Version"
-    id: firmware_version
-    update_interval: 24h
-    lambda: |-
-      return {"${fw_version}"};
   - platform: ld2450
     ld2450_id: ld2450_radar
     version:
