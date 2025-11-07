@@ -1,5 +1,6 @@
 substitutions:
   device_name: ascs-raumsensor
+  fw_version: "1.0.0"
 
 esphome:
   name: ${device_name}
@@ -236,6 +237,11 @@ text_sensor:
       else {
         return {"unknown"};
       }
+    name: "${device_name} Firmware Version"
+    id: firmware_version
+    update_interval: 24h
+    lambda: |-
+      return {"${fw_version}"};
   - platform: ld2450
     ld2450_id: ld2450_radar
     version:
