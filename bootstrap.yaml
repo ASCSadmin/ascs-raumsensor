@@ -1,0 +1,32 @@
+esphome:
+  name: ascs-raumsensor-%{mac}
+  friendly_name: ASCS Raumsensor
+  name_add_mac_suffix: true
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+# Logging & Home Assistant Support
+logger:
+api:
+mdns:
+
+# OTA Update Support
+ota:
+
+improv_serial:
+
+esp32_improv:
+  authorizer: none
+esp32_ble_tracker:
+
+wifi:
+  ap:
+    ssid: "ASCS Sensor Setup"
+    password: ""
+
+# Die eigentliche Konfiguration liegt in GitHub:
+packages:
+  ascs_main: github://ASCSadmin/ascs-raumsensor/main.yaml
