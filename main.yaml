@@ -1,29 +1,49 @@
 substitutions:
-  firmware_version: "0.0.1"
+  name: "ascs-raumsensor"
+  friendly_name: "ASCS Raumsensor"
+  device_description: "ASCS Raumsensor motion target tracking and enviroment sensor"
+  project_name: "ascs.raumsensor"
+  project_version: "v0.0.1"
+  update_interval: 60s
 
 esphome:
-  name: ascs-raumsensor-03
-  friendly_name: ASCS Raumsensor 03
+  name: "${name}"
+  friendly_name: "${friendly_name}"
+  comment: "${device_description}"
+  name_add_mac_suffix: true
   project:
-    name: ascs.raumsensor
-    version: "0.0.1"
+    name: "${project_name}"
+    version: "${project_version}"
 
 esp32:
   board: esp32dev
   framework:
     type: esp-idf
 
-# Enable logging
+# Logging & Home Assistant Support
 logger:
-
-# Enable Home Assistant API without encryption for broader accessibility
 api:
-
 mdns:
 
-# OTA (Over-The-Air) Updates ohne Passwort für einfache Konnektivität
+# OTA Update Support
 ota:
-  - platform: esphome
+  platform: esphome
+
+# WLAN Einrichtung per Handy (BLE/WLAN Setup über Browser)
+improv_serial:
+
+esp32_improv:
+  authorizer: none
+
+captive_portal:
+
+wifi:
+  ap:
+    ssid: "ASCS Raumsensor Setup"
+    password: ""
+
+dashboard_import:
+  package_import_url: github://ASCSadmin/ascs-raumsensor/main.yaml
 
 i2c:
   sda: GPIO21
