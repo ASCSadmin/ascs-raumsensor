@@ -1,9 +1,9 @@
 substitutions:
   name: "ascs-raumsensor"
   friendly_name: "ASCS Raumsensor"
-  device_description: "ASCS Raumsensor motion target tracking and enviroment sensor"
+  device_description: "ASCS Raumsensor motion target tracking and enviroment sensor (NEU)"
   project_name: "ascs.raumsensor"
-  project_version: "v0.0.1"
+  project_version: "v0.0.2"
   update_interval: 60s
 
 esphome:
@@ -112,7 +112,7 @@ switch:
   - platform: ld2450
     ld2450_id: ld2450_radar
     multi_target:
-      name: "Mehrfache Zielerfassung"
+      name: "Mehrfache Zielerfassungen"
 
 select:
   - platform: ld2450
