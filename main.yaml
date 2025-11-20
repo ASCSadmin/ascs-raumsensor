@@ -1,5 +1,5 @@
 substitutions:
-  firmware_version: "1.0.1"
+  firmware_version: "1.0.2"
 
 esphome:
   name: ascs-raumsensor
