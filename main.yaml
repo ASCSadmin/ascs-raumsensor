@@ -232,11 +232,6 @@ sensor:
 
 text_sensor:
   - platform: template
-    name: "ASCS Firmware Version"
-    id: firmware_version
-    update_interval: 24h
-    lambda: |-
-      return {"${fw_version}"};
     name: "BME680 IAQ Classification"
     icon: "mdi:checkbox-marked-circle-outline"
     lambda: |-
