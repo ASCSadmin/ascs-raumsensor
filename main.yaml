@@ -1,9 +1,12 @@
 substitutions:
-  firmware_version: "1.0.2"
+  firmware_version: "0.0.1"
 
 esphome:
-  name: ascs-raumsensor
-  friendly_name: ASCS Rasumsensor
+  name: ascs-raumsensor-03
+  friendly_name: ASCS Raumsensor 03
+  project:
+    name: ascs.raumsensor
+    version: "0.0.1"
 
 esp32:
   board: esp32dev
@@ -17,12 +20,6 @@ logger:
 api:
 
 mdns:
-
-improv_serial:
-
-esp32_improv:
-  authorizer: none
-esp32_ble_tracker:
 
 # OTA (Over-The-Air) Updates ohne Passwort für einfache Konnektivität
 ota:
