@@ -5,8 +5,8 @@
     {
       "chipFamily": "ESP32",
       "ota": {
-        "md5": "",
-        "path": "ascs-raumsensor.ota.bin",
+        "md5": "3d1291843bb787d7505c77dfd41f8c4d",
+        "path": "ascs-raumsensor.factory.bin",
         "release_url": "https://github.com/ASCSadmin/ascs-raumsensor/releases/latest",
         "summary": "Neue Version"
       }
