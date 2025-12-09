@@ -1,9 +1,9 @@
 substitutions:
   name: "ascs-raumsensor"
   friendly_name: "ASCS Raumsensor"
-  device_description: "ASCS Raumsensor motion target tracking and enviroment sensor (NEU)"
+  device_description: "ASCS Raumsensor motion target tracking and enviroment sensor"
   project_name: "ascs.raumsensor"
-  project_version: "v0.0.2"
+  project_version: "2025.12.01"
   update_interval: 60s
 
 esphome:
@@ -27,7 +27,26 @@ mdns:
 
 # OTA Update Support
 ota:
-  platform: esphome
+  - platform: esphome
+  - platform: http_request
+    on_begin:
+      then:
+        - logger.log: "OTA start"
+    on_progress:
+      then:
+        - logger.log:
+            format: "OTA progress %0.1f%%"
+            args: ["x"]
+    on_end:
+      then:
+        - logger.log: "OTA end"
+    on_error:
+      then:
+        - logger.log:
+            format: "OTA update error %d"
+            args: ["x"]
+
+http_request:
 
 # WLAN Einrichtung per Handy (BLE/WLAN Setup über Browser)
 improv_serial:
@@ -44,6 +63,13 @@ wifi:
 
 dashboard_import:
   package_import_url: github://ASCSadmin/ascs-raumsensor/main.yaml
+
+update:
+  - platform: http_request
+    name: "${friendly_name} Firmware"
+    # URL zu deiner manifest.json auf GitHub
+    source: https://github.com/ASCSadmin/ascs-raumsensor/releases/latest/download/manifest.json
+    update_interval: 1h  # oder z.B. 1h
 
 i2c:
   sda: GPIO21
@@ -112,7 +138,7 @@ switch:
   - platform: ld2450
     ld2450_id: ld2450_radar
     multi_target:
-      name: "Mehrfache Zielerfassungen"
+      name: "Mehrfache Zielerfassung"
 
 select:
   - platform: ld2450
