@@ -68,7 +68,7 @@ update:
   - platform: http_request
     name: "${friendly_name} Firmware"
     # URL zu deiner manifest.json auf GitHub
-    source: https://github.com/ASCSadmin/ascs-raumsensor/releases/latest/download/manifest.json
+    source: https://ASCSadmin.github.io/ascs-raumsensor/firmware/manifest.json
     update_interval: 1h  # oder z.B. 1h
 
 i2c:
