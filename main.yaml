@@ -3,7 +3,7 @@ substitutions:
   friendly_name: "ASCS Raumsensor"
   device_description: "ASCS Raumsensor motion target tracking and enviroment sensor"
   project_name: "ascs.raumsensor"
-  project_version: "2025.12.01"
+  project_version: "2026.01.01"
   update_interval: 60s
 
 esphome:
@@ -20,15 +20,15 @@ esp32:
   framework:
     type: esp-idf
 
-# Logging & Home Assistant Support
 logger:
 api:
 mdns:
 
-# OTA Update Support
 ota:
   - platform: esphome
+    id: ota_esphome
   - platform: http_request
+    id: ota_http_request
     on_begin:
       then:
         - logger.log: "OTA start"
@@ -47,8 +47,8 @@ ota:
             args: ["x"]
 
 http_request:
+  id: http_request_component
 
-# WLAN Einrichtung per Handy (BLE/WLAN Setup über Browser)
 improv_serial:
 
 esp32_improv:
@@ -66,23 +66,17 @@ dashboard_import:
 
 update:
   - platform: http_request
+    id: firmware_update_http
     name: "${friendly_name} Firmware"
-    # URL zu deiner manifest.json auf GitHub
     source: https://ASCSadmin.github.io/ascs-raumsensor/firmware/manifest.json
-    update_interval: 1h  # oder z.B. 1h
-
-i2c:
-  sda: GPIO21
-  scl: GPIO22
-  scan: true
-  id: "bme680_bus"
+    update_interval: 1h
 
 uart:
   id: uart_ld2450
-  tx_pin: 
-    number: GPIO1
-  rx_pin: 
-    number: GPIO3
+  tx_pin:
+    number: GPIO17
+  rx_pin:
+    number: GPIO16
   baud_rate: 256000
   parity: NONE
   stop_bits: 1
@@ -91,210 +85,235 @@ ld2450:
   id: ld2450_radar
   uart_id: uart_ld2450
 
+i2c:
+  id: i2c_bus_main
+  sda: GPIO21
+  scl: GPIO22
+  scan: true
+
 binary_sensor:
   - platform: ld2450
     ld2450_id: ld2450_radar
     has_target:
+      id: has_target_presence
       name: "Präsenz"
     has_moving_target:
+      id: has_moving_target_presence
       name: "Bewegtes Ziel"
     has_still_target:
+      id: has_still_target_presence
       name: "Stehendes Ziel"
 
 number:
   - platform: ld2450
     ld2450_id: ld2450_radar
     presence_timeout:
+      id: presence_timeout_number
       name: "Auszeit"
     zone_1:
       x1:
+        id: zone_1_x1_number
         name: "Zone-1 X1"
       y1:
+        id: zone_1_y1_number
         name: "Zone-1 Y1"
       x2:
+        id: zone_1_x2_number
         name: "Zone-1 X2"
       y2:
+        id: zone_1_y2_number
         name: "Zone-1 Y2"
     zone_2:
       x1:
+        id: zone_2_x1_number
         name: "Zone-2 X1"
       y1:
+        id: zone_2_y1_number
         name: "Zone-2 Y1"
       x2:
+        id: zone_2_x2_number
         name: "Zone-2 X2"
       y2:
+        id: zone_2_y2_number
         name: "Zone-2 Y2"
     zone_3:
       x1:
+        id: zone_3_x1_number
         name: "Zone-3 X1"
       y1:
+        id: zone_3_y1_number
         name: "Zone-3 Y1"
       x2:
+        id: zone_3_x2_number
         name: "Zone-3 X2"
       y2:
+        id: zone_3_y2_number
         name: "Zone-3 Y2"
 
 switch:
   - platform: ld2450
     ld2450_id: ld2450_radar
     multi_target:
+      id: multi_target_switch
       name: "Mehrfache Zielerfassung"
 
 select:
   - platform: ld2450
     ld2450_id: ld2450_radar
     baud_rate:
+      id: ld2450_baud_rate_select
       name: "Baud rate"
     zone_type:
+      id: ld2450_zone_type_select
       name: "Zonen Typ"
 
 button:
   - platform: ld2450
     ld2450_id: ld2450_radar
     factory_reset:
+      id: ld2450_factory_reset_button
       name: "Radar Factory Reset"
       entity_category: "config"
     restart:
+      id: ld2450_restart_button
       name: "Radar Neustart"
       entity_category: "config"
 
 sensor:
-  - platform: bme680
+  - platform: wifi_signal
+    id: wifi_signal_db
+    name: "WiFi Signal"
+    update_interval: ${update_interval}
+
+  - platform: am2320
     temperature:
-      name: "BME680 Temperature"
-      oversampling: 16x
-    pressure:
-      name: "BME680 Pressure"
+      id: am2320_temperature
+      name: "Temperatur"
     humidity:
-      id: "humidity"
-      name: "BME680 Humidity"
-    gas_resistance:
-      id: "gas_resistance"
-      name: "BME680 Gas Resistance"
-    address: 0x77
-    update_interval: 60s
-  - platform: template
-    name: "BME680 Indoor Air Quality"
-    id: iaq
-    icon: "mdi:gauge"
-    # calculation: comp_gas = log(R_gas[ohm]) + 0.04 log(Ohm)/%rh * hum[%rh]
-    lambda: |-
-      return log(id(gas_resistance).state) + 0.04 *  id(humidity).state;
-    state_class: "measurement"
+      id: am2320_humidity
+      name: "Luftfeuchtigkeit"
+    update_interval: ${update_interval}
+
+  - platform: bh1750
+    id: bh1750_illuminance
+    name: "Helligkeit"
+    address: 0x23
+    update_interval: ${update_interval}
+
   - platform: ld2450
     ld2450_id: ld2450_radar
     target_count:
-      name: "Ziel Anzahl"
-  - platform: ld2450
-    ld2450_id: ld2450_radar
+      id: ld2450_target_count
+      name: "Ziele Anzahl"
     still_target_count:
-      name: "Stehende Ziel Anzahl"
-  - platform: ld2450
-    ld2450_id: ld2450_radar
+      id: ld2450_still_target_count
+      name: "Stehende Ziele Anzahl"
     moving_target_count:
+      id: ld2450_moving_target_count
       name: "Bewegte Ziele Anzahl"
-  - platform: ld2450
-    ld2450_id: ld2450_radar
     target_1:
       x:
+        id: target_1_x
         name: "Ziel-1 X"
       y:
+        id: target_1_y
         name: "Ziel-1 Y"
       speed:
+        id: target_1_speed
         name: "Ziel-1 Geschwindigkeit"
       angle:
+        id: target_1_angle
         name: "Ziel-1 Winkel"
       distance:
+        id: target_1_distance
         name: "Ziel-1 Abstand"
       resolution:
+        id: target_1_resolution
         name: "Ziel-1 Auflösung"
     target_2:
       x:
+        id: target_2_x
         name: "Ziel-2 X"
       y:
+        id: target_2_y
         name: "Ziel-2 Y"
       speed:
+        id: target_2_speed
         name: "Ziel-2 Geschwindigkeit"
       angle:
+        id: target_2_angle
         name: "Ziel-2 Winkel"
       distance:
+        id: target_2_distance
         name: "Ziel-2 Abstand"
       resolution:
+        id: target_2_resolution
         name: "Ziel-2 Auflösung"
     target_3:
       x:
+        id: target_3_x
         name: "Ziel-3 X"
       y:
+        id: target_3_y
         name: "Ziel-3 Y"
       speed:
+        id: target_3_speed
         name: "Ziel-3 Geschwindigkeit"
       angle:
+        id: target_3_angle
         name: "Ziel-3 Winkel"
       distance:
+        id: target_3_distance
         name: "Ziel-3 Abstand"
       resolution:
+        id: target_3_resolution
         name: "Ziel-3 Auflösung"
     zone_1:
       target_count:
+        id: zone_1_target_count
         name: "Zone-1 Alle Ziele"
       still_target_count:
+        id: zone_1_still_target_count
         name: "Zone-1 Stehende Ziele"
       moving_target_count:
+        id: zone_1_moving_target_count
         name: "Zone-1 Bewegte Ziele"
     zone_2:
       target_count:
+        id: zone_2_target_count
         name: "Zone-2 Alle Ziele"
       still_target_count:
+        id: zone_2_still_target_count
         name: "Zone-2 Stehende Ziele"
       moving_target_count:
+        id: zone_2_moving_target_count
         name: "Zone-2 Bewegte Ziele"
     zone_3:
       target_count:
+        id: zone_3_target_count
         name: "Zone-3 Alle Ziele"
       still_target_count:
+        id: zone_3_still_target_count
         name: "Zone-3 Stehende Ziele"
       moving_target_count:
+        id: zone_3_moving_target_count
         name: "Zone-3 Bewegte Ziele"
 
 text_sensor:
-  - platform: template
-    name: "BME680 IAQ Classification"
-    icon: "mdi:checkbox-marked-circle-outline"
-    lambda: |-
-      if (int(id(iaq).state) <= 50) {
-        return {"Excellent"};
-      }
-      else if (int(id(iaq).state) <= 100) {
-        return {"Good"};
-      }
-      else if (int(id(iaq).state) <= 150) {
-        return {"Lightly polluted"};
-      }
-      else if (int(id(iaq).state) <= 200) {
-        return {"Moderately polluted"};
-      }
-      else if (int(id(iaq).state) <= 250) {
-        return {"Heavily polluted"};
-      }
-      else if (int(id(iaq).state) <= 350) {
-        return {"Severely polluted"};
-      }
-      else if (int(id(iaq).state) <= 500) {
-        return {"Extremely polluted"};
-      }
-      else {
-        return {"unknown"};
-      }
   - platform: ld2450
     ld2450_id: ld2450_radar
     version:
+      id: ld2450_firmware_version
       name: "LD2450 Firmware"
     target_1:
       direction:
+        id: target_1_direction
         name: "Ziel-1 Richtung"
     target_2:
       direction:
+        id: target_2_direction
         name: "Ziel-2 Richtung"
     target_3:
       direction:
+        id: target_3_direction
         name: "Ziel-3 Richtung"
