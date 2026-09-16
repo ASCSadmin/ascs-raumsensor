@@ -1,14 +1,14 @@
 {
   "name": "ascs-raumsensor",
-  "version": "2026.09.01",
+  "version": "2026.09.02",
   "builds": [
     {
       "chipFamily": "ESP32",
       "ota": {
-        "md5": "c3a5ebddc56ae945d4e97651cf06623d",
+        "md5": "b43e044acdb32ed87a31bea4e3aed982",
         "path": "ascs-raumsensor.ota.bin",
         "release_url": "https://github.com/ASCSadmin/ascs-raumsensor/releases/latest",
-        "summary": "Neue Version 2026.09.01"
+        "summary": "Neue Version 2026.09.02"
       }
     }
   ]
